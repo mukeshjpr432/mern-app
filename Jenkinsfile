@@ -34,34 +34,30 @@ pipeline {
 
         stage('Trivy Scan Frontend') {
             steps {
-                sh '''
-                trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-client:latest
-                '''
+                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-client:latest'
             }
         }
 
         stage('Trivy Scan Backend') {
             steps {
-                sh '''
-                trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-server:latest
-                '''
+                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-server:latest'
             }
         }
 
-      stage('Docker Login') {
-    steps {
-        withCredentials([usernamePassword(
-            credentialsId: 'dockerhub',
-            usernameVariable: 'mukeshjpr432',
-            passwordVariable: 'DoHare@1991'
-        )]) {
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
 
-            sh '''
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            '''
+                    sh '''
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                    '''
+                }
+            }
         }
-    }
-}
 
         stage('Push Docker Images') {
             steps {
@@ -70,8 +66,10 @@ pipeline {
             }
         }
 
-       stage('Deploy to Kubernetes') {
-    steps {
-        sh 'kubectl apply -f k8s/ --validate=false'
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f k8s/ --validate=false'
+            }
+        }
     }
 }
