@@ -9,43 +9,42 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/mukeshjpr432/mern-app.git'
+                git branch: 'main',
+                url: 'https://github.com/mukeshjpr432/mern-app.git'
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('SonarQube Scan') {
             steps {
-                script {
-                    echo "Running SonarQube Scan"
-                }
+                bat 'echo Running SonarQube Scan'
             }
         }
 
-        stage('Build Client Image') {
+        stage('Build Frontend Docker Image') {
             steps {
                 bat 'docker build -t %DOCKER_HUB%/mern-client:latest ./client'
             }
         }
 
-        stage('Build Server Image') {
+        stage('Build Backend Docker Image') {
             steps {
                 bat 'docker build -t %DOCKER_HUB%/mern-server:latest ./server'
             }
         }
 
-        stage('Trivy Client Scan') {
+        stage('Trivy Scan Frontend') {
             steps {
                 bat 'trivy image %DOCKER_HUB%/mern-client:latest'
             }
         }
 
-        stage('Trivy Server Scan') {
+        stage('Trivy Scan Backend') {
             steps {
                 bat 'trivy image %DOCKER_HUB%/mern-server:latest'
             }
         }
 
-        stage('Push Images') {
+        stage('Push Docker Images') {
             steps {
                 bat 'docker push %DOCKER_HUB%/mern-client:latest'
                 bat 'docker push %DOCKER_HUB%/mern-server:latest'
@@ -58,8 +57,4 @@ pipeline {
             }
         }
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 8c0bdfe50b8903d3d9e52fd8f3681ab8a6760ba4
