@@ -48,20 +48,20 @@ pipeline {
             }
         }
 
-        stage('Docker Login') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub',
-                    usernameVariable: 'mukeshjpr432',
-                    passwordVariable: 'DoHare@1991'
-                )]) {
+      stage('Docker Login') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub',
+            usernameVariable: 'mukeshjpr432',
+            passwordVariable: 'DoHare@1991'
+        )]) {
 
-                    sh '''
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                    '''
-                }
-            }
+            sh '''
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            '''
         }
+    }
+}
 
         stage('Push Docker Images') {
             steps {
