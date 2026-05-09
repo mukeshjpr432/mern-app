@@ -34,25 +34,25 @@ pipeline {
 
         stage('Trivy Scan Frontend') {
             steps {
-<<<<<<< HEAD
+
                 sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-client:latest'
-=======
+
                 sh '''
                 trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-client:latest
                 '''
->>>>>>> 2c1e1e2 (fixed pipeline)
+
             }
         }
 
         stage('Trivy Scan Backend') {
             steps {
-<<<<<<< HEAD
+
                 sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-server:latest'
-=======
+
                 sh '''
                 trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-server:latest
                 '''
->>>>>>> 2c1e1e2 (fixed pipeline)
+
             }
         }
 
