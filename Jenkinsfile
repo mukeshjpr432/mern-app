@@ -16,54 +16,73 @@ pipeline {
 
         stage('SonarQube Scan') {
             steps {
-                sh 'echo "Running SonarQube Scan"'
+                sh 'echo "Running SonarQube Scan..."'
             }
         }
 
         stage('Build Frontend Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_HUB/mern-client:latest ./client'
+                sh '''
+                docker build -t $DOCKER_HUB/mern-client:latest ./client
+                '''
             }
         }
 
         stage('Build Backend Docker Image') {
             steps {
-                sh 'docker build -t $DOCKER_HUB/mern-server:latest ./server'
+                sh '''
+                docker build -t $DOCKER_HUB/mern-server:latest ./server
+                '''
             }
         }
 
- stage('Trivy Scan Frontend') {
-    steps {
-        sh '''
-        trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-client:latest
-        '''
-    }
-}
+        stage('Trivy Scan Frontend') {
+            steps {
+                sh '''
+                trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-client:latest
+                '''
+            }
+        }
 
-stage('Trivy Scan Backend') {
-    steps {
-        sh '''
-        trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-server:latest
-        '''
-    }
-}
+        stage('Trivy Scan Backend') {
+            steps {
+                sh '''
+                trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-server:latest
+                '''
+            }
+        }
 
- 
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'mukeshjpr432',
+                    passwordVariable: 'DoHare@1991'
+                )]) {
+
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
+            }
+        }
+
 
         stage('Push Docker Images') {
             steps {
-                sh 'docker push $DOCKER_HUB/mern-client:latest'
-                sh 'docker push $DOCKER_HUB/mern-server:latest'
+                sh '''
+                docker push $DOCKER_HUB/mern-client:latest
+                docker push $DOCKER_HUB/mern-server:latest
+                '''
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/ --validate=false'
+                sh '''
+                kubectl apply -f k8s/ --validate=false
+                '''
             }
         }
     }
-
 }
-
-
