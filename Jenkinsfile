@@ -32,29 +32,21 @@ pipeline {
             }
         }
 
-        stage('Trivy Scan Frontend') {
-            steps {
+ stage('Trivy Scan Frontend') {
+    steps {
+        sh '''
+        trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-client:latest
+        '''
+    }
+}
 
-                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-client:latest'
-
-                sh '''
-                trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-client:latest
-                '''
-
-            }
-        }
-
-        stage('Trivy Scan Backend') {
-            steps {
-
-                sh 'trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-server:latest'
-
-                sh '''
-                trivy image --exit-code 0 --severity HIGH,CRITICAL $DOCKER_HUB/mern-server:latest
-                '''
-
-            }
-        }
+stage('Trivy Scan Backend') {
+    steps {
+        sh '''
+        trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-server:latest
+        '''
+    }
+}
 
         stage('Docker Login') {
             steps {
