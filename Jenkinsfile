@@ -16,44 +16,44 @@ pipeline {
 
         stage('SonarQube Scan') {
             steps {
-                bat 'echo Running SonarQube Scan'
+                sh 'echo Running SonarQube Scan'
             }
         }
 
         stage('Build Frontend Docker Image') {
             steps {
-                bat 'docker build -t %DOCKER_HUB%/mern-client:latest ./client'
+                sh 'docker build -t $DOCKER_HUB/mern-client:latest ./client'
             }
         }
 
         stage('Build Backend Docker Image') {
             steps {
-                bat 'docker build -t %DOCKER_HUB%/mern-server:latest ./server'
+                sh 'docker build -t $DOCKER_HUB/mern-server:latest ./server'
             }
         }
 
         stage('Trivy Scan Frontend') {
             steps {
-                bat 'trivy image %DOCKER_HUB%/mern-client:latest'
+                sh 'trivy image $DOCKER_HUB/mern-client:latest'
             }
         }
 
         stage('Trivy Scan Backend') {
             steps {
-                bat 'trivy image %DOCKER_HUB%/mern-server:latest'
+                sh 'trivy image $DOCKER_HUB/mern-server:latest'
             }
         }
 
         stage('Push Docker Images') {
             steps {
-                bat 'docker push %DOCKER_HUB%/mern-client:latest'
-                bat 'docker push %DOCKER_HUB%/mern-server:latest'
+                sh 'docker push $DOCKER_HUB/mern-client:latest'
+                sh 'docker push $DOCKER_HUB/mern-server:latest'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat 'kubectl apply -f k8s/'
+                sh 'kubectl apply -f k8s/'
             }
         }
     }
