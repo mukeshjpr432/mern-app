@@ -16,7 +16,7 @@ pipeline {
 
         stage('SonarQube Scan') {
             steps {
-                sh 'echo Running SonarQube Scan'
+                sh 'echo "Running SonarQube Scan"'
             }
         }
 
@@ -41,6 +41,21 @@ pipeline {
         stage('Trivy Scan Backend') {
             steps {
                 sh 'trivy image $DOCKER_HUB/mern-server:latest'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
+                }
             }
         }
 
