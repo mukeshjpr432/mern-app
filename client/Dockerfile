@@ -1,32 +1,35 @@
-# Use official Node.js 14 as base image
-FROM node:16.20.2-buster-slim as build
+# Build Stage
+FROM node:20-alpine AS build
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the client code
+# Copy source code
 COPY . .
 
-RUN mv .env.example .env
+# Create env file
+RUN cp .env.example .env
 
-# Build the client for production
+# Build frontend
 RUN npm run build
 
-
+# Production Stage
 FROM nginx:alpine
-# Copy the build artifacts from the build stage
+
+# Copy build output
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
-# NGINX default configuration file
+
+# Copy nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 8080
+# Expose port
 EXPOSE 8080
 
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
-
