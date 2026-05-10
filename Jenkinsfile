@@ -85,4 +85,8 @@ pipeline {
             }
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 20d0295 (updated pipeline and dockerfiles)
