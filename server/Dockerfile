@@ -1,20 +1,19 @@
-# Use official Node.js 14 as base image
-FROM node:16.20.2-buster-slim
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the server code
+# Copy server source
 COPY . .
 
-# Expose port 3000 for the server
+# Expose backend port
 EXPOSE 3000
 
-# Default command to start the application
+# Start backend server
 CMD ["npm", "start"]
