@@ -22,33 +22,25 @@ pipeline {
 
         stage('Build Frontend Docker Image') {
             steps {
-                sh '''
-                docker build -t $DOCKER_HUB/mern-client:latest ./client
-                '''
+                sh 'docker build -t $DOCKER_HUB/mern-client:latest ./client'
             }
         }
 
         stage('Build Backend Docker Image') {
             steps {
-                sh '''
-                docker build -t $DOCKER_HUB/mern-server:latest ./server
-                '''
+                sh 'docker build -t $DOCKER_HUB/mern-server:latest ./server'
             }
         }
 
         stage('Trivy Scan Frontend') {
             steps {
-                sh '''
-                trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-client:latest
-                '''
+                sh 'trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-client:latest'
             }
         }
 
         stage('Trivy Scan Backend') {
             steps {
-                sh '''
-                trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-server:latest
-                '''
+                sh 'trivy image --severity HIGH,CRITICAL --exit-code 0 $DOCKER_HUB/mern-server:latest'
             }
         }
 
@@ -67,21 +59,17 @@ pipeline {
             }
         }
 
-
         stage('Push Docker Images') {
             steps {
-                sh '''
-                docker push $DOCKER_HUB/mern-client:latest
-                docker push $DOCKER_HUB/mern-server:latest
-                '''
+                sh 'docker push $DOCKER_HUB/mern-client:latest'
+                sh 'docker push $DOCKER_HUB/mern-server:latest'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh '''
-                kubectl apply -f k8s/ --validate=false
-                '''
+                sh 'kubectl apply -f k8s/ --validate=false'
             }
         }
     }
+}
